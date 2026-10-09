@@ -3,7 +3,7 @@
 #include <pthread.h> // Biblioteca para usar o Threads
 #include <unistd.h>
 #include <locale.h>
-#include <semaphore.h> // Biblioteca para Sem·foros
+#include <semaphore.h> // Biblioteca para Sem√°foros
 
 #define NUM_FILOSOFOS 5
 #define NUM_INTERACOES 50
@@ -18,34 +18,52 @@
 #define FUNDO_BRANCO "\033[47m"
 #define RESET "\033[0m"
 
-// Cada garfo possui um sem·foro
-// 1 = garfo disponÌvel
+// Cada garfo possui um sem√°foro
+// 1 = garfo dispon√≠vel
 sem_t garfos[NUM_FILOSOFOS];
 
-// Controla quantos filÛsofos podem tentar pegar garfos
+// Controla quantos fil√≥sofos podem tentar pegar garfos
 sem_t controle;
 
-// FunÁ„o que cada filÛsofo vai executar
+// Controla a ordem de atendimento dos fil√≥sofos
+pthread_mutex_t fila_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t fila_cond = PTHREAD_COND_INITIALIZER;
+
+int proximo_ticket = 0;
+int ticket_atual = 0;
+
+// Fun√ß√£o que cada fil√≥sofo vai executar
 void *filosofo(void *arg){
-     // Descobre qual È o n˙mero do filÛsofo
+     // Descobre qual √© o n√∫mero do fil√≥sofo
     int id = *(int *)arg;
 
-    // Cada filÛsofo precisa de dois garfos
+    // Cada fil√≥sofo precisa de dois garfos
     int garfo_esquerdo = id;
     int garfo_direito = (id + 1) % NUM_FILOSOFOS;
 	
-    // Cada filÛsofo vai repetir isso 50 vezes
+    // Cada fil√≥sofo vai repetir isso 50 vezes
     int i;
     for(i=1;i<=NUM_INTERACOES;i++){
-        // Primeiro, o filÛsofo fica pensando
-        printf(AZUL "[FilÛsofo %d] Pensando...\n" RESET, id);
+        // Primeiro, o fil√≥sofo fica pensando
+        printf(AZUL "[Fil√≥sofo %d] Pensando...\n" RESET, id);
         // Espera meio segundo
         usleep(500000);
+        
+        // Recebe uma senha para entrar na fila
+		pthread_mutex_lock(&fila_mutex);
+
+		int meu_ticket = proximo_ticket++;
+	
+		while(meu_ticket != ticket_atual){
+    	pthread_cond_wait(&fila_cond, &fila_mutex);
+	}
+
+		pthread_mutex_unlock(&fila_mutex);
 
         // Agora ele vai tentar pegar os garfos
-        printf(AMARELO "[FilÛsofo %d] Tentando pegar os garfos...\n" RESET, id);
+        printf(AMARELO "[Fil√≥sofo %d] Tentando pegar os garfos...\n" RESET, id);
 
-        // SÛ 4 filÛsofos podem tentar pegar garfos ao mesmo tempo
+        // S√≥ 4 fil√≥sofos podem tentar pegar garfos ao mesmo tempo
         // Isso ajuda a evitar que todos fiquem travados
         sem_wait(&controle);
 
@@ -58,27 +76,36 @@ void *filosofo(void *arg){
         sem_wait(&garfos[garfo_direito]);
 
         // Conseguiu os dois garfos
-        // Ent„o outro filÛsofo pode tentar pegar os seus
+        // Ent√£o outro fil√≥sofo pode tentar pegar os seus
         sem_post(&controle);
+        
+        // Libera a vez para o pr√≥ximo fil√≥sofo
+		pthread_mutex_lock(&fila_mutex);
 
-        // Agora sim, o filÛsofo pode comer
-        printf(VERDE "[FilÛsofo %d] COMENDO [%d/%d]\n" RESET,id, i, NUM_INTERACOES);
+		ticket_atual++;
+
+		pthread_cond_broadcast(&fila_cond);
+
+		pthread_mutex_unlock(&fila_mutex);
+
+        // Agora sim, o fil√≥sofo pode comer
+        printf(VERDE "[Fil√≥sofo %d] COMENDO [%d/%d]\n" RESET,id, i, NUM_INTERACOES);
 		// Fica 0,5 segundo comendo
         usleep(500000);
 
         // Terminou de comer
-        // Ent„o devolve os dois garfos
+        // Ent√£o devolve os dois garfos
         sem_post(&garfos[garfo_esquerdo]);
         sem_post(&garfos[garfo_direito]);
 
         // Mostra que terminou de comer
-        printf(VERMELHO "[FilÛsofo %d] Terminou de comer.\n\n" RESET, id);
-		// Espera um pouco antes de comeÁar novamente
+        printf(VERMELHO "[Fil√≥sofo %d] Terminou de comer.\n\n" RESET, id);
+		// Espera um pouco antes de come√ßar novamente
         usleep(200000);
     }
 
-    // Depois das 50 vezes, o filÛsofo termina
-    printf(ROXO "[FilÛsofo %d] Terminou todas as interaÁıes.\n" RESET, id);
+    // Depois das 50 vezes, o fil√≥sofo termina
+    printf(ROXO "[Fil√≥sofo %d] Terminou todas as intera√ß√µes.\n" RESET, id);
 
     return NULL;
 }
@@ -86,33 +113,33 @@ void *filosofo(void *arg){
 int main()
 {
     setlocale(LC_ALL, "Portuguese");
-    // Cria espaÁo para as 5 threads
-    // Cada thread vai representar um filÛsofo
+    // Cria espa√ßo para as 5 threads
+    // Cada thread vai representar um fil√≥sofo
     pthread_t threads[NUM_FILOSOFOS];
 
-    // ele vai guarda o n˙mero de cada filÛsofo
+    // ele vai guarda o n√∫mero de cada fil√≥sofo
     int ids[NUM_FILOSOFOS];
 
     printf(ROXO "========================================\n" RESET);
-    printf(ROXO "        JANTAR DOS FIL”SOFOS\n" RESET);
+    printf(ROXO "        JANTAR DOS FIL√ìSOFOS\n" RESET);
     printf(ROXO "========================================\n\n" RESET);
 
-    // Cria um sem·foro para cada garfo
-    // O valor 1 significa que o garfo comeÁa disponÌvel
+    // Cria um sem√°foro para cada garfo
+    // O valor 1 significa que o garfo come√ßa dispon√≠vel
     int i;
     for(i=0;i<NUM_FILOSOFOS;i++){
         sem_init(&garfos[i], 0, 1);
     }
 
-    // Permite que no m·ximo 4 filÛsofos
+    // Permite que no m√°ximo 4 fil√≥sofos
     // tentem pegar garfos ao mesmo tempo
     sem_init(&controle, 0, NUM_FILOSOFOS - 1);
 
-    // Cria uma thread para cada filÛsofo
+    // Cria uma thread para cada fil√≥sofo
     for(i=0;i<NUM_FILOSOFOS;i++){
-    	// Define o n˙mero do filÛsofo
+    	// Define o n√∫mero do fil√≥sofo
         ids[i] = i;
-// Cria a thread e inicia a funÁ„o do filÛsofo
+// Cria a thread e inicia a fun√ß√£o do fil√≥sofo
         pthread_create(
             &threads[i],
             NULL,
@@ -121,19 +148,23 @@ int main()
         );
     }
 
-    // Espera todos os filÛsofos terminarem
+    // Espera todos os fil√≥sofos terminarem
     for(i=0;i<NUM_FILOSOFOS;i++){
         pthread_join(threads[i], NULL);
     }
 
    // Depois que todos terminaram,
-    // destrÛi os sem·foros dos garfos
+    // destr√≥i os sem√°foros dos garfos
     for(i=0;i<NUM_FILOSOFOS;i++){
         sem_destroy(&garfos[i]);
     }
 
-    // DestrÛi o sem·foro de controle
+    // Destr√≥i o sem√°foro de controle
     sem_destroy(&controle);
+    
+    // Destr√≥i os controles da fila
+	pthread_mutex_destroy(&fila_mutex);
+	pthread_cond_destroy(&fila_cond);
 
     printf("\n");
     printf(ROXO "========================================\n" RESET);
