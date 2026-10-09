@@ -51,13 +51,44 @@ Também pode ocorrer **starvation**, quando um filósofo espera por muito tempo 
 
 ---
 
+## ⚙️ Funcionamento da implementação
+
+O programa cria cinco threads, cada uma representando um filósofo, e cinco semáforos individuais para controlar o acesso aos garfos.
+
+Além desses semáforos, é utilizado um semáforo de controle, inicializado com o valor `4`, que limita a quantidade de filósofos que podem tentar adquirir garfos simultaneamente.
+
+O funcionamento de cada filósofo segue estas etapas:
+
+1. Pensar durante um intervalo de tempo;
+2. Solicitar uma vaga no semáforo de controle;
+3. Adquirir o garfo esquerdo;
+4. Adquirir o garfo direito;
+5. Liberar a vaga do semáforo de controle após obter os dois garfos;
+6. Comer durante um intervalo de tempo;
+7. Liberar os dois garfos;
+8. Repetir o ciclo até completar 50 interações.
+
+---
+
+## 🧵 Conceitos demonstrados
+
+* **Concorrência:** os cinco filósofos executam suas atividades por meio de threads independentes.
+* **Exclusão mútua:** cada garfo possui um semáforo que controla seu acesso, impedindo que dois filósofos o utilizem simultaneamente.
+* **Sincronização:** os semáforos coordenam a aquisição e a liberação dos recursos compartilhados.
+* **Deadlock:** o semáforo de controle evita o deadlock clássico em que todos os filósofos seguram um garfo e aguardam o segundo.
+* **Starvation:** a implementação não garante formalmente que todos os filósofos tenham acesso aos recursos de maneira justa.
+* **Simulação de tempo:** a função `usleep()` introduz pausas para representar os períodos de pensamento e alimentação.
+
+---
+
 ## 🛠️ Tecnologias utilizadas
 
 - Linguagem: **C**
 - Threads: **POSIX Threads (pthread)**
 - Sincronização: **Semáforos POSIX**
-- Biblioteca de semáforos: 
-- Biblioteca de threads: 
-- Biblioteca de tempo: 
-- Sistema operacional recomendado: 
-
+- Biblioteca de semáforos: **semaphore.h**
+- Biblioteca de threads: **pthread.h**
+- Biblioteca de tempo: **unistd.h**
+* Ambiente de desenvolvimento e testes: [OnlineGDB](https://www.onlinegdb.com/)
+* Compatibilidade: **ambientes com suporte a C, POSIX Threads (`pthread`) e Semáforos POSIX**.
+- Compilador: **GCC**
