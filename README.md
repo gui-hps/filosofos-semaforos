@@ -92,3 +92,139 @@ O funcionamento de cada filósofo segue estas etapas:
 - Ambiente de desenvolvimento e testes: [OnlineGDB](https://www.onlinegdb.com/)
 - Compatibilidade: **ambientes com suporte a C, POSIX Threads (`pthread`) e Semáforos POSIX**.
 - Compilador: **GCC**
+
+## ▶️ Instruções para compilar e executar localmente
+
+O projeto foi desenvolvido em **C** utilizando **POSIX Threads (`pthread`)** e **Semáforos POSIX**. Para executar o código localmente, é necessário utilizar um ambiente com suporte a essas tecnologias.
+
+### 🪟 Windows — utilizando WSL
+
+No Windows, recomenda-se utilizar o **WSL (Windows Subsystem for Linux)**.
+
+#### 1. Instalar o WSL
+
+Abra o **PowerShell como administrador** e execute:
+
+```powershell
+wsl --install
+```
+
+Após a instalação, reinicie o computador.
+
+#### 2. Instalar o GCC
+
+Abra o Ubuntu pelo menu Iniciar e execute:
+
+```bash
+sudo apt update
+sudo apt install gcc
+```
+
+Verifique a instalação:
+
+```bash
+gcc --version
+```
+
+#### 3. Clonar o repositório
+
+No terminal do Ubuntu/WSL:
+
+```bash
+git clone URL_DO_REPOSITORIO
+```
+
+Entre na pasta do projeto:
+
+```bash
+cd NOME_DO_REPOSITORIO
+```
+
+#### 4. Compilar o código
+
+Caso o arquivo principal seja `jantar_filosofos.c`, execute:
+
+```bash
+gcc jantar_filosofos.c -o jantar_filosofos -pthread
+```
+
+O parâmetro `-pthread` é necessário para habilitar o suporte às **POSIX Threads**.
+
+#### 5. Executar o programa
+
+Após a compilação:
+
+```bash
+./jantar_filosofos
+```
+
+O programa será executado no terminal e apresentará as ações dos cinco filósofos durante as 50 interações.
+
+---
+
+### 🐧 Linux
+
+Em distribuições Linux baseadas em Debian/Ubuntu, instale o GCC:
+
+```bash
+sudo apt update
+sudo apt install gcc
+```
+
+Depois, clone o repositório:
+
+```bash
+git clone URL_DO_REPOSITORIO
+```
+
+Entre na pasta:
+
+```bash
+cd NOME_DO_REPOSITORIO
+```
+
+Compile:
+
+```bash
+gcc jantar_filosofos.c -o jantar_filosofos -pthread
+```
+
+Execute:
+
+```bash
+./jantar_filosofos
+```
+
+---
+
+### 🌐 OnlineGDB
+
+Também é possível executar o projeto utilizando o **OnlineGDB**.
+
+1. Acesse o OnlineGDB.
+2. Crie um novo projeto em **C**.
+3. Cole o código do arquivo `jantar_filosofos.c`.
+4. Clique em **Run**.
+5. Verifique a execução no terminal.
+
+> **Observação:** o programa utiliza recursos POSIX, como `pthread.h` e `semaphore.h`. Por isso, recomenda-se utilizar **Linux ou WSL** para garantir compatibilidade completa.
+
+### ⚠️ Possíveis erros
+
+Caso ocorra algum erro durante a compilação, verifique:
+
+* Se o GCC está instalado;
+* Se o arquivo possui extensão `.c`;
+* Se as bibliotecas `pthread.h` e `semaphore.h` estão disponíveis;
+* Se o comando de compilação contém `-pthread`;
+* Se o ambiente possui suporte a **POSIX Threads** e **Semáforos POSIX**.
+
+### 📌 Comando resumido
+
+Para compilar e executar rapidamente:
+
+```bash
+gcc jantar_filosofos.c -o jantar_filosofos -pthread
+./jantar_filosofos
+```
+
