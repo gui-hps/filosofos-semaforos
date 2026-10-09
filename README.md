@@ -89,6 +89,6 @@ O funcionamento de cada filósofo segue estas etapas:
 - Biblioteca de semáforos: **semaphore.h**
 - Biblioteca de threads: **pthread.h**
 - Biblioteca de tempo: **unistd.h**
-* Ambiente de desenvolvimento e testes: [OnlineGDB](https://www.onlinegdb.com/)
-* Compatibilidade: **ambientes com suporte a C, POSIX Threads (`pthread`) e Semáforos POSIX**.
+- Ambiente de desenvolvimento e testes: [OnlineGDB](https://www.onlinegdb.com/)
+- Compatibilidade: **ambientes com suporte a C, POSIX Threads (`pthread`) e Semáforos POSIX**.
 - Compilador: **GCC**
